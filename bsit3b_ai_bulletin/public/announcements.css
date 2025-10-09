@@ -1,0 +1,99 @@
+.page-header h1 {
+  font-size: 1.8rem;
+  color: #3a3a3a;
+  display: flex;
+  align-items: center;
+}
+
+.page-header .icon {
+  color: #2ba84a;
+  margin-right: 10px;
+  font-size: 1.8rem;
+}
+
+.page-header p {
+  margin-top: 5px;
+  color: #555;
+}
+
+.announcement-grid {
+  margin-top: 30px;
+  display: grid;
+  padding: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.announcement-card {
+  background-color: #fff8d9;
+  border: 2px solid #ffce4b;
+  border-radius: 12px;
+  padding: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  transition: 0.3s;
+}
+
+.fb-post-container {
+  position: relative;
+  width: 100%;
+  padding-bottom: 130%;
+  height: 0;
+  overflow: hidden;
+  border-radius: 10px;
+}
+
+.fb-post-container iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+.announcement-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
+}
+
+.announcement-card h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 5px;
+  color: #222;
+}
+
+/* === DARK MODE === */
+
+body.dark-mode {
+  background-color: #1e1e1e;
+  color: #eee;
+}
+
+body.dark-mode .page-header h1,
+body.dark-mode .page-header p {
+  color: #fff;
+}
+
+body.dark-mode .sidebar {
+  background-color: #2a2a2a;
+}
+
+body.dark-mode .announcement-card {
+  background-color: #333;
+  border-color: #777;
+  color: #fff;
+}
+
+body.dark-mode .announcement-card .date {
+  color: #777;
+}
+
+body.dark-mode .announcement-card h3 {
+  color: #fff;
+}
+
+body.dark-mode .announcement-card p{
+  color: #bbb;
+}
