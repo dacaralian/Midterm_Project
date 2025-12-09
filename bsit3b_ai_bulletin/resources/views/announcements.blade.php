@@ -3,7 +3,7 @@
 @section('title', 'BSIT 3B Announcements')
 
 @section('css')
-<link rel="stylesheet" href="{{ asset('announcements.css') }}" />
+<link rel="stylesheet" href="{{ asset('css/announcements.css') }}" />
 @endsection
 
 @section('announcement_active')

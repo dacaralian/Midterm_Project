@@ -1,0 +1,259 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+body {
+  background-color: #fdfde6;
+  color: #333;
+}
+
+/* Dashboard Layout */
+.dashboard {
+  display: flex;
+  height: 100vh;
+}
+
+/* Sidebar */
+.sidebar {
+  background-color: #f4a300;
+  width: 230px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-radius: 0 0 20px 0;
+}
+
+.sidebar .logo {
+  text-align: center;
+}
+
+.sidebar .logo img {
+  width: 70px;
+  border-radius: 50%;
+}
+
+.sidebar nav ul {
+  list-style: none;
+  margin-top: 20px;
+}
+
+.sidebar nav ul li {
+  padding: 10px;
+  margin: 10px 0;
+  cursor: pointer;
+  border-radius: 10px;
+  transition: 0.3s;
+}
+
+.sidebar nav ul li.active,
+.sidebar nav ul li:hover {
+  background-color: #ffce4b;
+}
+
+a{
+  text-decoration: none;
+  color: inherit;
+}
+
+.sidebar .mode-toggle {
+  text-align: center;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.mode-btn {
+  background: none;
+  border: none;
+  font-size: 1.8rem;
+  cursor: pointer;
+  color: #fff;
+  transition: transform 0.2s;
+}
+
+.mode-btn:hover {
+  transform: scale(1.3);
+}
+
+/* Main */
+.main {
+  flex: 1;
+  padding: 20px 40px;
+  overflow-y: auto;
+}
+
+/* Chatbot Floating Button */
+#chatbot-icon {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    background: #f6ad55;
+    color: #fff;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 24px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    z-index: 1000;
+    transition: transform 0.2s, background 0.2s;
+}
+
+#chatbot-icon:hover {
+    transform: scale(1.1);
+    background: #dd6b20;
+}
+
+/* Chatbot Window */
+#chatbot-window {
+    position: fixed;
+    bottom: 85px;
+    right: 25px;
+    width: 350px;
+    max-height: 500px;
+    background: #fffbea;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    z-index: 999;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Header */
+#chatbot-window .chat-header {
+    background: #f6ad55;
+    padding: 12px;
+    color: #fff;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+}
+
+/* Chat Body */
+#chatbot-window .chat-body {
+    padding: 10px;
+    height: 300px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    background: #fff8e1;
+}
+
+/* Messages */
+.user-message {
+    align-self: flex-end;
+    background: #4a5568;
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 12px;
+    max-width: 80%;
+}
+
+.bot-message {
+    align-self: flex-start;
+    background: #f6ad55;
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 12px;
+    max-width: 80%;
+}
+
+.bot-message.typing {
+    font-style: italic;
+    opacity: 0.7;
+}
+
+/* Input Area */
+#chatbot-window .chat-input {
+    border-top: 1px solid #fcd34d;
+    padding: 8px;
+    background: #fffbea;
+}
+
+#chatbot-window .chat-input input {
+    width: 75%;
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    outline: none;
+}
+
+#chatbot-window .chat-input button {
+    padding: 8px 12px;
+    background: #f6ad55;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    margin-left: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.2s, transform 0.2s;
+}
+
+#chatbot-window .chat-input button:hover {
+    background: #dd6b20;
+    transform: translateY(-2px);
+}
+
+/* === DARK MODE === */
+
+body.dark-mode {
+  background-color: #1e1e1e;
+  color: #f1f1f1;
+}
+
+body.dark-mode .sidebar {
+  background-color: #2a2a2a;
+  color: #fff;
+}
+
+body.dark-mode .sidebar nav ul li.active,
+body.dark-mode .sidebar nav ul li:hover {
+  background-color: #444;
+  color: #ffce4b;
+}
+
+body.dark-mode .mode-btn {
+  color: #ffce4b;
+}
+
+body.dark-mode #chatbot-icon {
+    background: #2d3748;
+}
+
+body.dark-mode #chatbot-window {
+    background: #2d3748;
+    color: #fefcbf;
+}
+
+body.dark-mode #chatbot-window .chat-header {
+    background: #38a169;
+    color: #fff;
+}
+
+body.dark-mode .chat-body {
+    background: #1f1f1f;
+}
+
+body.dark-mode .user-message {
+    background: #4a5568;
+    color: #fff;
+}
+
+body.dark-mode .bot-message {
+    background: #38a169;
+    color: #fff;
+}

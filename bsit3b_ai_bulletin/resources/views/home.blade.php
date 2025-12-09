@@ -3,7 +3,7 @@
 @section('title', 'BSIT 3B Dashboard')
 
 @section('css')
-<link rel="stylesheet" href="{{ asset('home.css') }}" />
+<link rel="stylesheet" href="{{ asset('css/home.css') }}" />
 @endsection
 
 @section('home_active')
@@ -19,10 +19,10 @@ class="active"
 </header>
 
 <section class="status">
-    <div class="card">9<br><span class="label">Enrolled Subjects</span></div>
-    <div class="card">???<br><span class="label">Upcoming Activities</span></div>
-    <div class="card">???<br><span class="label">Task for Today</span></div>
-    <div class="card">3<br><span class="label">Announcements</span></div>
+    <div class="card">--<br><span class="label">Projects</span></div>
+    <div class="card">--<br><span class="label">Activities</span></div>
+    <div class="card">--<br><span class="label">Quizzes</span></div>
+    <div class="card">--<br><span class="label">Announcements</span></div>
 </section>
 
 <section class="schedule">

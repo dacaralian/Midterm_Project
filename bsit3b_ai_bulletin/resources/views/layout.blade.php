@@ -7,7 +7,7 @@
   <meta name="csrf-token" content="{{ csrf_token() }}">
   <title>@yield('title')</title>
   
-  <link rel="stylesheet" href="{{ asset('template.css') }}" />
+  <link rel="stylesheet" href="{{ asset('css/template.css') }}" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css">
   @yield('css')
 </head>
@@ -61,14 +61,13 @@
     </div>
 
     <div class="chat-input">
-      <input type="text" id="user-input" placeholder="Type your message..." />
-      <button id="send-btn">Send</button>
+      <form id="chat-form">
+        <input type="text" id="user-input" placeholder="Type your message..." />
+        <button type="submit" id="send-btn">Send</button>
+      </form>
     </div>
   </div>
-</body>
-
-
-<script>
+  <script>
   const modeToggle = document.getElementById('mode-toggle');
   const body = document.body;
 
@@ -77,15 +76,16 @@
   const chatBody = document.getElementById("chat-body");
   const userInput = document.getElementById("user-input");
   const sendBtn = document.getElementById("send-btn");
+  const chatForm = document.getElementById("chat-form");
 
+  // Theme handling
   if (localStorage.getItem('theme') === 'dark') {
     body.classList.add('dark-mode');
     modeToggle.innerHTML = '<i class="ri-sun-line"></i>';
   }
 
-  modeToggle.addEventListener('click', () => {
+  modeToggle?.addEventListener('click', () => {
     body.classList.toggle('dark-mode');
-
     if (body.classList.contains('dark-mode')) {
       modeToggle.innerHTML = '<i class="ri-sun-line"></i>';
       localStorage.setItem('theme', 'dark');
@@ -95,7 +95,7 @@
     }
   });
 
-// Show chat window
+  // Show/hide chat window
   chatIcon.addEventListener("click", () => {
     if (chatWindow.style.display === "flex") {
       chatWindow.style.display = "none";
@@ -106,69 +106,70 @@
     }
   });
 
-// Send message
-  sendBtn.addEventListener("click", sendMessage);
-  userInput.addEventListener("keypress", (e) => {
-    if (e.key === "Enter") sendMessage();
+  // Prevent page refresh on submit
+  chatForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    sendMessage();
   });
 
-  let chatHistory = [
-    { role: "system", content: "You are a helpful AI assistant for the dashboard." }
-  ];
+  userInput.addEventListener("keypress", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      sendMessage();
+    }
+  });
 
   async function sendMessage() {
-  const message = userInput.value.trim();
-  if (message === "") return;
+    const message = userInput.value.trim();
+    if (!message) return;
 
-  // Display user message
-  const userMsg = document.createElement("div");
-  userMsg.classList.add("user-message");
-  userMsg.textContent = message;
-  chatBody.appendChild(userMsg);
-  userInput.value = "";
-  chatBody.scrollTop = chatBody.scrollHeight;
+    // Display user message
+    const userMsg = document.createElement("div");
+    userMsg.classList.add("user-message");
+    userMsg.textContent = message;
+    chatBody.appendChild(userMsg);
+    userInput.value = "";
+    chatBody.scrollTop = chatBody.scrollHeight;
 
-  // Typing indicator
-  const typingMsg = document.createElement("div");
-  typingMsg.classList.add("bot-message", "typing");
-  typingMsg.textContent = "Buzzee is typing...";
-  chatBody.appendChild(typingMsg);
-  chatBody.scrollTop = chatBody.scrollHeight;
+    // Typing indicator
+    const typingMsg = document.createElement("div");
+    typingMsg.classList.add("bot-message", "typing");
+    typingMsg.textContent = "Buzzee is typing...";
+    chatBody.appendChild(typingMsg);
+    chatBody.scrollTop = chatBody.scrollHeight;
 
-  // Send message to Laravel backend
-  fetch("http://127.0.0.1:8000/chat", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "X-CSRF-TOKEN": document
-        .querySelector('meta[name="csrf-token"]')
-        .getAttribute("content"),
-    },
-    body: JSON.stringify({ message }),
-  })
-    .then((res) => res.json())
-    .then((data) => {
-      // Remove typing indicator
+    try {
+      const res = await fetch("/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content"),
+        },
+        body: JSON.stringify({ message }),
+      });
+
+      const data = await res.json();
       typingMsg.remove();
 
-      // Display bot response
       const botMsg = document.createElement("div");
       botMsg.classList.add("bot-message");
-      botMsg.textContent = data.reply || data.message || "No response.";
+      botMsg.textContent = data.reply || "No response.";
       chatBody.appendChild(botMsg);
       chatBody.scrollTop = chatBody.scrollHeight;
-    })
-    .catch((error) => {
-      console.error("Error:", error);
 
+    } catch (error) {
+      console.error(error);
       typingMsg.remove();
-
       const botMsg = document.createElement("div");
       botMsg.classList.add("bot-message");
       botMsg.textContent = "Failed to connect to AI server.";
       chatBody.appendChild(botMsg);
-    });
-}
-
+      chatBody.scrollTop = chatBody.scrollHeight;
+    }
+  }
 </script>
+</body>
+
+
+
 </html>

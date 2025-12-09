@@ -2,268 +2,144 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Course;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use App\Models\Activity;
 
 class CourseController extends Controller
 {
-    public function index() {
-    $courses = [
-        [
-            'id' => 1,
-            'code' => 'ADET',
-            'title' => 'Application Development & Emerging Technologies',
-            'instructor' => 'Richard Nonato',
-            'image' => 'adet.png',
-        ],
-        [
-            'id' => 2,
-            'code' => 'AA',
-            'title' => 'Art Appreciation',
-            'instructor' => 'Marian Beatrize Olaguer',
-            'image' => 'aa.png',
-        ],
-        [
-            'id' => 3,
-            'code' => 'DF',
-            'title' => 'Digital Forensics',
-            'instructor' => 'Noel Paguio',
-            'image' => 'df.png',
-        ],
-        [
-            'id' => 4,
-            'code' => 'EPP',
-            'title' => 'English Proficiency Program',
-            'instructor' => 'Ma. Allaine Agua',
-            'image' => 'epp.png',
-        ],
-        [
-            'id' => 5,
-            'code' => 'IAS',
-            'title' => 'Information Assurance & Security',
-            'instructor' => 'Tikin Hermogeno Llagas',
-            'image' => 'ias.png',
-        ],
-        [
-            'id' => 6,
-            'code' => 'MRC',
-            'title' => 'Methods of Research in Computing',
-            'instructor' => 'Ian Benitez',
-            'image' => 'mrc.png',
-        ],
-        [
-            'id' => 7,
-            'code' => 'QM',
-            'title' => 'Quantitative Methods',
-            'instructor' => 'Kathleen May Corbito',
-            'image' => 'qm.png',
-        ],
-        [
-            'id' => 8,
-            'code' => 'SIA',
-            'title' => 'Systems Integration and Architecture',
-            'instructor' => 'Mark Joseph Narvadez',
-            'image' => 'sia.png',
-        ],
-        [
-            'id' => 9,
-            'code' => 'WST2',
-            'title' => 'Web Systems and Technologies 2',
-            'instructor' => 'Aljohn Marilag',
-            'image' => 'wst2.png',
-        ],
-    ];
-    return view('courses', compact('courses'));
+    public function index()
+    {
+        $courses = Course::all();
+        return view('courses.index', compact('courses'));
     }
 
+    public function create()
+    {
+        return view('courses.create');
+    }
 
-    
+    public function store(Request $request)
+    {
+        $request->validate([
+            'code' => 'required|unique:courses,code',
+            'title' => 'required',
+            'instructor' => 'required',
+            'image' => 'nullable|image|max:5000'
+        ]);
+
+        $imagePath = null;
+
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')
+                                 ->store('course_images', 'public');
+        }
+
+        Course::create([
+            'code' => strtoupper($request->code),
+            'title' => $request->title,
+            'instructor' => $request->instructor,
+            'image' => $imagePath
+        ]);
+
+        return redirect()->route('courses.index')
+                         ->with('success', 'Course created successfully.');
+    }
+
     public function show($id)
     {
-        $courseDetails = [
-        1 => [
-            'id' => 1,
-            'code' => 'ADET',
-            'title' => 'Application Development & Emerging Technologies',
-            'instructor' => 'Richard F. Nonato',
-            'schedule' => [
-                ['day' => 'Wed', 'time' => '7:00 AM - 10:00 AM', 'room' => 'CS Laboratory'],
-                ['day' => 'Fri', 'time' => '8:00 AM - 10:00 AM', 'room' => 'AB4 Room 5'],
-            ],
-            'activities' => [
-                ['title' => 'Activity 1', 'due' => 'Jan 1, 11:59 PM'],
-                ['title' => 'Activity 2', 'due' => 'Jan 15, 11:59 PM'],
-            ],
-            'projects' => [
-                ['title' => 'Midterm Project', 'due' => 'Jan 1, 11:59 PM'],
-                ['title' => 'Final Project', 'due' => 'Jan 15, 11:59 PM'],
-            ],
-            'image' => 'adet.png',
-        ],
+        $course = Course::findOrFail($id);
+        return view('courses.show', compact('course'));
+    }
 
-        2 => [
-            'id' => 2,
-            'code' => 'AA',
-            'title' => 'Art Appreciation',
-            'instructor' => 'Marian Beatrize Olaguer',
-            'schedule' => [
-                ['day' => 'Sat', 'time' => '2:00 PM - 5:00 PM', 'room' => 'Online'],
-            ],
-            'activities' => [
-                ['title' => 'Activity 1', 'due' => 'Jan 1, 11:59 PM'],
-                ['title' => 'Activity 2', 'due' => 'Jan 15, 11:59 PM'],
-            ],
-            'projects' => [
-                ['title' => 'Midterm Project', 'due' => 'Jan 1, 11:59 PM'],
-                ['title' => 'Final Project', 'due' => 'Jan 15, 11:59 PM'],
-            ],
-            'image' => 'aa.png',
-        ],
+    public function edit($id)
+    {
+        $course = Course::findOrFail($id);
+        return view('courses.edit', compact('course'));
+    }
 
-        3 => [
-            'id' => 3,
-            'code' => 'DF',
-            'title' => 'Elective 1 - Digital Forensics',
-            'instructor' => 'Noel Paguio',
-            'schedule' => [
-                ['day' => 'Wed', 'time' => '1:00 PM - 3:00 PM', 'room' => 'AB1 Room 4'],
-                ['day' => 'Thu', 'time' => '7:00 AM - 10:00 AM', 'room' => 'IT Lab 1'],
-            ],
-            'activities' => [
-                ['title' => 'Activity 1', 'due' => 'Jan 1, 11:59 PM'],
-                ['title' => 'Activity 2', 'due' => 'Jan 15, 11:59 PM'],
-            ],
-            'projects' => [
-                ['title' => 'Midterm Project', 'due' => 'Jan 1, 11:59 PM'],
-                ['title' => 'Final Project', 'due' => 'Jan 15, 11:59 PM'],
-            ],
-            'image' => 'df.png',
-        ],
+    public function update(Request $request, $id)
+    {
+        $course = Course::findOrFail($id);
 
-        4 => [
-            'id' => 4,
-            'code' => 'EPP',
-            'title' => 'English Proficiency Program',
-            'instructor' => 'Ma. Allaine Agua',
-            'schedule' => [
-                ['day' => 'Tue', 'time' => '3:00 PM - 4:00 PM', 'room' => 'Online'],
-                ['day' => 'Sat', 'time' => '8:00 AM - 10:00 AM', 'room' => 'AB4 Room 5'],
-            ],
-            'activities' => [
-                ['title' => 'Activity 1', 'due' => 'Jan 1, 11:59 PM'],
-                ['title' => 'Activity 2', 'due' => 'Jan 15, 11:59 PM'],
-            ],
-            'projects' => [
-                ['title' => 'Midterm Project', 'due' => 'Jan 1, 11:59 PM'],
-                ['title' => 'Final Project', 'due' => 'Jan 15, 11:59 PM'],
-            ],
-            'image' => 'epp.png',
-        ],
+        $request->validate([
+            'code' => 'required|unique:courses,code,' . $id,
+            'title' => 'required',
+            'instructor' => 'required',
+            'image' => 'nullable|image|max:2048'
+        ]);
 
-        5 => [
-            'id' => 5,
-            'code' => 'IAS',
-            'title' => 'Information Assurance and Security',
-            'instructor' => 'Tikin Hermogeno Llagas',
-            'schedule' => [
-                ['day' => 'Thu', 'time' => '10:00 AM - 12:00 PM', 'room' => 'AB4 Room 2'],
-                ['day' => 'Thu', 'time' => '1:00 PM - 4:00 PM', 'room' => 'IT Lab 2'],
-            ],
-            'activities' => [
-                ['title' => 'Activity 1', 'due' => 'Jan 1, 11:59 PM'],
-                ['title' => 'Activity 2', 'due' => 'Jan 15, 11:59 PM'],
-            ],
-            'projects' => [
-                ['title' => 'Midterm Project', 'due' => 'Jan 1, 11:59 PM'],
-                ['title' => 'Final Project', 'due' => 'Jan 15, 11:59 PM'],
-            ],
-            'image' => 'ias.png',
-        ],
+        $imagePath = $course->image;
 
-        6 => [
-            'id' => 6,
-            'code' => 'MRC',
-            'title' => 'Methods of Research in Computing',
-            'instructor' => 'Ian Benitez',
-            'schedule' => [
-                ['day' => 'Tue', 'time' => '10:00 AM - 11:00 AM', 'room' => 'Online'],
-                ['day' => 'Fri', 'time' => '1:00 PM - 3:00 PM', 'room' => 'AB4 Room 1'],
-            ],
-            'activities' => [
-                ['title' => 'Activity 1', 'due' => 'Jan 1, 11:59 PM'],
-                ['title' => 'Activity 2', 'due' => 'Jan 15, 11:59 PM'],
-            ],
-            'projects' => [
-                ['title' => 'Midterm Project', 'due' => 'Jan 1, 11:59 PM'],
-                ['title' => 'Final Project', 'due' => 'Jan 15, 11:59 PM'],
-            ],
-            'image' => 'mrc.png',
-        ],
+        if ($request->hasFile('image')) {
+            if ($course->image) {
+                Storage::disk('public')->delete($course->image);
+            }
 
-        7 => [
-            'id' => 7,
-            'code' => 'QM',
-            'title' => 'Quantitative Methods',
-            'instructor' => 'Kathleen May Corbito',
-            'schedule' => [
-                ['day' => 'Tue', 'time' => '4:00 PM - 5:00 PM', 'room' => 'Online'],
-                ['day' => 'Sat', 'time' => '10:00 AM - 12:00 PM', 'room' => 'AB4 Room 3'],
-            ],
-            'activities' => [
-                ['title' => 'Activity 1', 'due' => 'Jan 1, 11:59 PM'],
-                ['title' => 'Activity 2', 'due' => 'Jan 15, 11:59 PM'],
-            ],
-            'projects' => [
-            ['title' => 'Midterm Project', 'due' => 'Jan 1, 11:59 PM'],
-            ['title' => 'Final Project', 'due' => 'Jan 15, 11:59 PM'],
-            ],
-            'image' => 'qm.png',
-        ],
-
-        8 => [
-            'id' => 8,
-            'code' => 'SIA',
-            'title' => 'Systems Integration and Architecture 1',
-            'instructor' => 'Mark Joseph Narvadez',
-            'schedule' => [
-                ['day' => 'Mon', 'time' => '1:00 PM - 4:00 PM', 'room' => 'IT Lab 2'],
-            ],
-            'activities' => [
-                ['title' => 'Activity 1', 'due' => 'Jan 1, 11:59 PM'],
-                ['title' => 'Activity 2', 'due' => 'Jan 15, 11:59 PM'],
-            ],
-            'projects' => [
-                ['title' => 'Midterm Project', 'due' => 'Jan 1, 11:59 PM'],
-                ['title' => 'Final Project', 'due' => 'Jan 15, 11:59 PM'],
-            ],
-            'image' => 'sia.png',
-        ],
-
-        9 => [
-            'id' => 9,
-            'code' => 'WST2',
-            'title' => 'Elective 2 - Web Systems and Technologies 2',
-            'instructor' => 'Aljohn Marilag',
-            'schedule' => [
-                ['day' => 'Mon', 'time' => '7:00 AM - 10:00 AM', 'room' => 'IT Lab 2'],
-                ['day' => 'Mon', 'time' => '10:00 AM - 12:00 PM', 'room' => 'AB4 Room 2'],
-            ],
-            'activities' => [
-                ['title' => 'Activity 1', 'due' => 'Jan 1, 11:59 PM'],
-                ['title' => 'Activity 2', 'due' => 'Jan 15, 11:59 PM'],
-            ],
-            'projects' => [
-                ['title' => 'Midterm Project', 'due' => 'Jan 1, 11:59 PM'],
-                ['title' => 'Final Project', 'due' => 'Jan 15, 11:59 PM'],
-            ],
-            'image' => 'wst2.png',
-        ],
-        ];
-
-        if (!isset($courseDetails[$id])) {
-            abort(404);
+            $imagePath = $request->file('image')
+                                 ->store('course_images', 'public');
         }
-        $course = $courseDetails[$id];
-        return view('show', compact('course'));
+
+        $course->update([
+            'code' => strtoupper($request->code),
+            'title' => $request->title,
+            'instructor' => $request->instructor,
+            'image' => $imagePath
+        ]);
+
+        return redirect()->route('courses.index')
+                         ->with('success', 'Course updated successfully.');
+    }
+
+    public function destroy($id)
+    {
+        $course = Course::findOrFail($id);
+
+        if ($course->image) {
+            Storage::disk('public')->delete($course->image);
+        }
+
+        $course->delete();
+
+        return redirect()->route('courses.index')
+                         ->with('success', 'Course deleted successfully.');
+    }
+
+    public function storeActivity(Request $request, Course $course)
+    {
+        $request->validate([
+            'category' => 'required',
+            'title' => 'required',
+            'due_date' => 'nullable|date',
+        ]);
+    
+        $course->activities()->create([
+            'category' => $request->category,
+            'title' => $request->title,
+            'due_date' => $request->due_date,
+        ]);
+    
+        return back()->with('success', 'Activity added!');
+    }
+    
+    public function updateActivity(Request $request, Activity $activity)
+    {
+        $request->validate([
+            'category' => 'required',
+            'title' => 'required',
+            'due_date' => 'nullable|date',
+        ]);
+    
+        $activity->update($request->only('category','title','due_date'));
+    
+        return back()->with('success', 'Activity updated!');
+    }
+    
+    public function deleteActivity(Activity $activity)
+    {
+        $activity->delete();
+    
+        return back()->with('success', 'Activity deleted!');
     }
 }
-
